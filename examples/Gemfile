@@ -1,0 +1,4 @@
+source 'https://rubygems.org'
+
+gem 'simple_stats_store', path: '../'
+gem 'terminal-table'
