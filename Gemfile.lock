@@ -2,9 +2,6 @@ PATH
   remote: .
   specs:
     simple_stats_store (0.0.1)
-      activerecord
-      activerecord-rescue_from_duplicate
-      sqlite3
 
 GEM
   remote: https://rubygems.org/
@@ -66,7 +63,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activerecord
+  activerecord-rescue_from_duplicate
   pry
   rspec
   simple_stats_store!
   simplecov
+  sqlite3

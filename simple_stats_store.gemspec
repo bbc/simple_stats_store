@@ -8,8 +8,5 @@ Gem::Specification.new do |s|
   s.email       = 'joe.haig@bbc.co.uk'
   s.files       = Dir['README.md', 'lib/**/*.rb' ]
   s.homepage    = 'https://github.com/bbc/simple_stats_store'
-  s.add_dependency 'activerecord'
-  s.add_dependency 'activerecord-rescue_from_duplicate'
-  s.add_dependency 'sqlite3'
   s.license     = 'MIT'
 end
