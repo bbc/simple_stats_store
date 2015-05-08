@@ -56,5 +56,45 @@ RSpec.describe 'server' do
         ).scan }.to change(Stats, :count).by(1)
       end
     end
+
+    it 'fails cleanly when attempting to add a duplicate key' do
+      ActiveRecord::Base.establish_connection(
+        adapter: :sqlite3,
+        database: Tempfile.new(['uniq_test', '.sql']).path
+      )
+      ActiveRecord::Schema.define do
+        create_table :uniq_tests do |table|
+          table.column :unq, :integer
+        end
+        add_index :uniq_tests, :unq, unique: true
+      end
+
+      class UniqTests < ActiveRecord::Base
+        validates_uniqueness_of :unq, rescue_from_duplication: true
+      end
+
+      Dir.mktmpdir do |dir|
+        ssss = SimpleStatsStore::Server.new(
+          data_dump: SimpleStatsStore::FileDump.new(dir),
+          models: {uniq_tests: Object.const_get('UniqTests')}
+        )
+
+        File.open(File.expand_path('stat1.data', dir), 'w') do |stat|
+          stat.puts "---"
+          stat.puts "uniq_tests"
+          stat.puts "unq: 1"
+          stat.puts "---"
+        end
+        ssss.scan
+        File.open(File.expand_path('stat2.data', dir), 'w') do |stat|
+          stat.puts "---"
+          stat.puts "uniq_tests"
+          stat.puts "unq: 1"
+          stat.puts "---"
+        end
+        expect { ssss.scan }.to change(UniqTests, :count).by(0)
+      end
+
+    end
   end
 end

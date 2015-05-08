@@ -21,6 +21,8 @@ that is the sole accessor of the database.
 Create the repository for temporary data files:
 
 ```ruby
+require 'simple_stats_store/file_dump'
+
 dir = '/path/to/temporary/data/directory'
 Dir.mkdir(dir)
 data_dump = SimpleStatsStore::FileDump.new(dir)
@@ -31,6 +33,8 @@ data_dump = SimpleStatsStore::FileDump.new(dir)
 Set up the database:
 
 ```ruby
+require 'simple_stats_store/server'
+
 db_file = '/path/to/database.sql'
 ActiveRecord::Base.establish_connection(
   adapter: :sqlite3,

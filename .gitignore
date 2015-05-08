@@ -22,6 +22,7 @@ build/
 
 ## Environment normalisation:
 /.bundle/
+/examples/.bundle/
 /vendor/bundle
 /lib/bundler/man/
 
