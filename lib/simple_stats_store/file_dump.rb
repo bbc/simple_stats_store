@@ -15,7 +15,7 @@ module SimpleStatsStore
             contents << data
             File.delete(f)
           end
-        catch Error::ENOENT
+        rescue Errno::ENOENT
           puts "Failed to open file #{f}"
         end
       end
