@@ -9,10 +9,14 @@ module SimpleStatsStore
     def files_contents
       contents = []
       Dir["#{@dir}/*"].each do |f|
-        data = File.open(f, 'r').read
-        if /\n---\n$/.match(data)
-          contents << data
-          File.delete(f)
+        begin
+          data = File.open(f, 'r').read
+          if /\n---\n$/.match(data)
+            contents << data
+            File.delete(f)
+          end
+        catch Error::ENOENT
+          puts "Failed to open file #{f}"
         end
       end
       contents
