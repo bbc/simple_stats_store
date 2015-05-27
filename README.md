@@ -34,11 +34,13 @@ Set up the database:
 
 ```ruby
 require 'simple_stats_store/server'
+require 'active_record'
 
 db_file = '/path/to/database.sql'
 ActiveRecord::Base.establish_connection(
   adapter: :sqlite3,
-  database: db_file
+  database: db_file,
+  timeout: 200
 )
 ActiveRecord::Schema.define do
   create_table :table do |table|
