@@ -55,7 +55,8 @@ end
 
 ssss = SimpleStatsStore::Server.new(
   data_dump: data_dump,
-  models: { table_ref: Table }
+  models: { table_ref: Table },
+  name: 'process_name'                # Optional
 )
 
 t_next = Time.new + 300
