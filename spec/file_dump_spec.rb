@@ -127,9 +127,7 @@ RSpec.describe 'SimpleStatsStore::FileDump' do
     it 'writes the data to the new file' do
       Dir.mktmpdir do |dir|
         SimpleStatsStore::FileDump.new(dir).write('stats', { key1: 'value 1', key2: 'value 2' })
-puts Dir["#{dir}/**/*"]
         File.open(Dir["#{dir}/**/*.stats"][0], 'r') do |file|
-puts file.inspect
           expect(file.read.split("\n")).to match([
             '---',
             'stats',
