@@ -3,6 +3,7 @@ module SimpleStatsStore
     def initialize(options)
       @data_dump = options[:data_dump]
       @models = options[:models]
+      @name = options[:name] || $0
     end
 
     def scan
@@ -26,6 +27,7 @@ module SimpleStatsStore
 
     def run(&block)
       Process.fork do
+        $0 = @name
         loop do
           self.scan
           yield if block_given?
