@@ -138,5 +138,20 @@ RSpec.describe 'SimpleStatsStore::FileDump' do
         end
       end
     end
+
+    it 'writes the data to the new file (using symbols for model name)' do
+      Dir.mktmpdir do |dir|
+        SimpleStatsStore::FileDump.new(dir).write(:stats, { key1: 'value 1', key2: 'value 2' })
+        File.open(Dir["#{dir}/**/*.stats"][0], 'r') do |file|
+          expect(file.read.split("\n")).to match([
+            '---',
+            'stats',
+            'key1: value 1',
+            'key2: value 2',
+            '---'
+          ])
+        end
+      end
+    end
   end
 end
