@@ -15,7 +15,8 @@ RSpec.describe 'SimpleStatsStore::FileDump' do
   describe '#files_contents' do
     it 'returns the content of a file in the given directory' do
       Dir.mktmpdir do |dir|
-        File.open(File.expand_path('file1', dir), 'w') do |f|
+        Dir.mkdir(File.expand_path('stats', dir))
+        File.open(File.expand_path('stats/file1.stats', dir), 'w') do |f|
           f.puts "---"
           f.puts "Line 1"
           f.puts "Line 2"
@@ -27,17 +28,18 @@ RSpec.describe 'SimpleStatsStore::FileDump' do
 
     it 'returns the contents of all files in the given directory' do
       Dir.mktmpdir do |dir|
-        File.open(File.expand_path('file1', dir), 'w') do |f|
+        Dir.mkdir(File.expand_path('stats', dir))
+        File.open(File.expand_path('stats/file1.stats', dir), 'w') do |f|
           f.puts "---"
           f.puts "Line 1"
           f.puts "---"
         end
-        File.open(File.expand_path('file2', dir), 'w') do |f|
+        File.open(File.expand_path('stats/file2.stats', dir), 'w') do |f|
           f.puts "---"
           f.puts "Line 2"
           f.puts "---"
         end
-        File.open(File.expand_path('file3', dir), 'w') do |f|
+        File.open(File.expand_path('stats/file3.stats', dir), 'w') do |f|
           f.puts "---"
           f.puts "Line 3"
           f.puts "---"
@@ -48,7 +50,8 @@ RSpec.describe 'SimpleStatsStore::FileDump' do
 
     it 'does not return an incomplete stats file' do
       Dir.mktmpdir do |dir|
-        File.open(File.expand_path('file1', dir), 'w') do |f|
+        Dir.mkdir(File.expand_path('stats', dir))
+        File.open(File.expand_path('stats/file1.stats', dir), 'w') do |f|
           f.puts "---"
           f.puts "Line 1"
           f.puts "Line 2"
@@ -59,17 +62,18 @@ RSpec.describe 'SimpleStatsStore::FileDump' do
 
     it 'returns the contents of only complete files in the given directory' do
       Dir.mktmpdir do |dir|
-        File.open(File.expand_path('file1', dir), 'w') do |f|
+        Dir.mkdir(File.expand_path('stats', dir))
+        File.open(File.expand_path('stats/file1.stats', dir), 'w') do |f|
           f.puts "---"
           f.puts "Line 1"
           f.puts "---"
         end
-        File.open(File.expand_path('file2', dir), 'w') do |f|
+        File.open(File.expand_path('stats/file2.stats', dir), 'w') do |f|
           f.puts "---"
           f.puts "Line 2"
           f.puts "---"
         end
-        File.open(File.expand_path('file3', dir), 'w') do |f|
+        File.open(File.expand_path('stats/file3.stats', dir), 'w') do |f|
           f.puts "---"
           f.puts "Line 3"
         end
@@ -85,7 +89,8 @@ RSpec.describe 'SimpleStatsStore::FileDump' do
 
     it 'deletes file after collecting' do
       Dir.mktmpdir do |dir|
-        f = File.open(File.expand_path('file1', dir), 'w')
+        Dir.mkdir(File.expand_path('stats', dir))
+        f = File.open(File.expand_path('stats/file1.stats', dir), 'w')
         f.puts "---"
         f.puts "Line 1"
         f.puts "Line 2"
@@ -98,7 +103,8 @@ RSpec.describe 'SimpleStatsStore::FileDump' do
 
     it 'does not delete an incomplete stats file' do
       Dir.mktmpdir do |dir|
-        f = File.open(File.expand_path('file1', dir), 'w')
+        Dir.mkdir(File.expand_path('stats', dir))
+        f = File.open(File.expand_path('stats/file1.stats', dir), 'w')
         f.puts "---"
         f.puts "Line 1"
         f.puts "Line 2"
@@ -114,14 +120,14 @@ RSpec.describe 'SimpleStatsStore::FileDump' do
       Dir.mktmpdir do |dir|
         SimpleStatsStore::FileDump.new(dir).write('stats', { key1: 'value 1', key2: 'value 2' })
         SimpleStatsStore::FileDump.new(dir).write('stats', { key1: 'value 3', key2: 'value 4' })
-        expect(Dir["#{dir}/*"].length).to eq 2
+        expect(Dir["#{dir}/**/*.stats"].length).to eq 2
       end
     end
 
     it 'writes the data to the new file' do
       Dir.mktmpdir do |dir|
         SimpleStatsStore::FileDump.new(dir).write('stats', { key1: 'value 1', key2: 'value 2' })
-        File.open(Dir["#{dir}/*"][0], 'r') do |file|
+        File.open(Dir["#{dir}/**/*.stats"][0], 'r') do |file|
           expect(file.read.split("\n")).to match([
             '---',
             'stats',

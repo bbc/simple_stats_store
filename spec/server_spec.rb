@@ -42,7 +42,8 @@ RSpec.describe 'server' do
       end
 
       Dir.mktmpdir do |dir|
-        File.open(File.expand_path('stat1.data', dir), 'w') do |stat|
+        Dir.mkdir(File.expand_path('stats', dir))
+        File.open(File.expand_path('stats/stat1.stats', dir), 'w') do |stat|
           stat.puts "---"
           stat.puts "stats"
           stat.puts "timestamp: 2015-04-30 15:47:32.123"
@@ -78,15 +79,16 @@ RSpec.describe 'server' do
           data_dump: SimpleStatsStore::FileDump.new(dir),
           models: {uniq_tests: Object.const_get('UniqTests')}
         )
+        Dir.mkdir(File.expand_path('uniq_tests', dir))
 
-        File.open(File.expand_path('stat1.data', dir), 'w') do |stat|
+        File.open(File.expand_path('uniq_tests/stat1.stats', dir), 'w') do |stat|
           stat.puts "---"
           stat.puts "uniq_tests"
           stat.puts "unq: 1"
           stat.puts "---"
         end
         ssss.scan
-        File.open(File.expand_path('stat2.data', dir), 'w') do |stat|
+        File.open(File.expand_path('uniq_tests/stat2.stats', dir), 'w') do |stat|
           stat.puts "---"
           stat.puts "uniq_tests"
           stat.puts "unq: 1"
