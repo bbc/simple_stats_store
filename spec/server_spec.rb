@@ -51,7 +51,6 @@ RSpec.describe 'server' do
           stat.puts "y: 3"
           stat.puts "---"
         end
-puts Dir["#{dir}/**/*"]
         expect { SimpleStatsStore::Server.new(
           data_dump: SimpleStatsStore::FileDump.new(dir),
           models: {stats: Object.const_get('Stats')}
