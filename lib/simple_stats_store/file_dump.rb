@@ -8,7 +8,7 @@ module SimpleStatsStore
 
     def files_contents
       contents = []
-      Dir["#{@dir}/*"].each do |f|
+      Dir["#{@dir}/**/*.stats"].each do |f|
         begin
           data = File.open(f, 'r').read
           if /\n---\n$/.match(data)
@@ -28,10 +28,12 @@ module SimpleStatsStore
 
     def write(model, data)
       i = 0
-      while File.exists?(File.expand_path("sss-#{$$}-#{Time.new.to_i}-#{i}.stats", @dir))
+      subdir = File.expand_path(model, @dir)
+      Dir.mkdir(subdir) if ! Dir.exists?(subdir)
+      while File.exists?(File.expand_path("sss-#{$$}-#{Time.new.to_i}-#{i}.stats", subdir))
         i += 1
       end
-      File.open(File.expand_path("sss-#{$$}-#{Time.new.to_i}-#{i}.stats", @dir), 'w') do |f|
+      File.open(File.expand_path("sss-#{$$}-#{Time.new.to_i}-#{i}.stats", subdir), 'w') do |f|
         f.puts "---"
         f.puts model
         data.each do |key, value|
