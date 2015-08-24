@@ -2,8 +2,9 @@ require 'tempfile'
 
 module SimpleStatsStore
   class FileDump
-    def initialize(dir)
+    def initialize(dir, options = {})
       @dir = dir
+      @max = options.has_key?(:max) ? options[:max] : nil
     end
 
     def files_contents
@@ -30,6 +31,15 @@ module SimpleStatsStore
       i = 0
       subdir = File.expand_path(model.to_s, @dir)
       Dir.mkdir(subdir) if ! Dir.exists?(subdir)
+      if ! @max.nil?
+        files = Dir["#{subdir}/*"].sort { |a, b| File.ctime(a) <=> File.ctime(b) }
+        if files.length >= @max
+          files[0..(@max-files.length)].each do |f|
+            File.delete(f)
+          end
+        end
+      end
+
       while File.exists?(File.expand_path("sss-#{$$}-#{Time.new.to_i}-#{i}.stats", subdir))
         i += 1
       end
