@@ -138,5 +138,65 @@ RSpec.describe 'SimpleStatsStore::FileDump' do
         end
       end
     end
+
+    it 'writes the data to the new file (using symbols for model name)' do
+      Dir.mktmpdir do |dir|
+        SimpleStatsStore::FileDump.new(dir).write(:stats, { key1: 'value 1', key2: 'value 2' })
+        File.open(Dir["#{dir}/**/*.stats"][0], 'r') do |file|
+          expect(file.read.split("\n")).to match([
+            '---',
+            'stats',
+            'key1: value 1',
+            'key2: value 2',
+            '---'
+          ])
+        end
+      end
+    end
+
+    it 'writes no more than the maximum number of files per model' do
+      Dir.mktmpdir do |dir|
+        sss = SimpleStatsStore::FileDump.new(dir, max: 5)
+        6.times do
+          sss.write(:stats, { key1: 'value 1', key2: 'value 2' })
+        end
+        expect(Dir["#{dir}/**/*.stats"].length).to eq 5
+        6.times do
+          sss.write(:stats, { key1: 'value 1', key2: 'value 2' })
+          expect(Dir["#{dir}/**/*.stats"].length).to eq 5
+        end
+      end
+    end
+
+    it 'removes oldest file when maximum file number reached' do
+      Dir.mktmpdir do |dir|
+        sss = SimpleStatsStore::FileDump.new(dir, max: 5)
+        5.times do |i|
+          sss.write(:stats, { key1: 'value 1', key2: "value :#{i}:" })
+        end
+        sss.write(:stats, { key1: 'value 1', key2: 'value :5:' })
+        File.open(Dir["#{dir}/**/*.stats"][0], 'r') do |file|
+          expect(file.read.split("\n")).not_to match([
+            '---',
+            'stats',
+            'key1: value 1',
+            'key2: value :0:',
+            '---'
+          ])
+        end
+      end
+    end
+
+    it 'removes files if there are too many' do
+      Dir.mktmpdir do |dir|
+        sss = SimpleStatsStore::FileDump.new(dir, max: 10)
+        10.times do |i|
+          sss.write(:stats, { key1: 'value 1', key2: "value 2" })
+        end
+        sss2 = SimpleStatsStore::FileDump.new(dir, max: 5)
+        sss2.write(:stats, { key1: 'value 1', key2: 'value 2' })
+        expect(Dir["#{dir}/**/*.stats"].length).to eq 5
+      end
+    end
   end
 end
